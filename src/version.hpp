@@ -1,1 +1,2 @@
-#define __VERSION__ 2 
+#pragma once
+#define __VERSION__ 4 

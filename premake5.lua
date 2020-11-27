@@ -64,10 +64,10 @@ workspace "ObjParserC"
 		dependson "LinearC"
 
 		language "c++"
-		kind "staticlib"
+		kind "consoleapp"
 
-		pchheader "stdafx.hpp"
-		pchsource "src/stdafx.cpp"
+		pchheader "pch.hpp"
+		pchsource "src/pch.cpp"
 
 		defines {
 			"NOMINMAX",
@@ -97,7 +97,7 @@ workspace "ObjParserC"
 		kind "staticlib"
 
 		files {
-			".\\deps\\LinearC\\src\\**.h",
+			".\\deps\\LinearC\\src\\**.hpp",
 			".\\deps\\LinearC\\src\\**.cpp",
 		}
 
