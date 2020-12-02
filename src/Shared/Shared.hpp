@@ -1,5 +1,7 @@
 #pragma once
 
+#pragma warning (disable : 26495)
+
 
 
 namespace ObjParserC
@@ -21,7 +23,6 @@ namespace ObjParserC
 		}
 		Nullable()
 		{
-			this->_value = default;
 			this->_exists = false;
 		}
 		Nullable(T value)
@@ -43,6 +44,17 @@ namespace ObjParserC
 		float B;
 		float A;
 
+		ColorF()
+		{
+			this->A = this->R = this->G = this->B = 0.0f;
+		}
+		ColorF(const ColorF& color)
+		{
+			this->R = color.R;
+			this->G = color.G;
+			this->B = color.B;
+			this->A = color.A;
+		}
 		ColorF(float r, float g, float b, float a)
 		{
 			this->R = r;
@@ -57,6 +69,11 @@ namespace ObjParserC
 	/// </summary>
 	enum class IlluminanceType : int32_t
 	{
+		/// <summary>
+		/// Indicates that illumination mode is not specified in the material.
+		/// </summary>
+		Invalid = -1,
+
 		/// <summary>
 		/// This is a constant color illumination model.  The color is the specified Kd 
 		/// for the material.
@@ -143,6 +160,11 @@ namespace ObjParserC
 	enum class ImfchanType : int32_t
 	{
 		/// <summary>
+		/// Indicates that channel type is not specified in the texture.
+		/// </summary>
+		Invalid = -1,
+
+		/// <summary>
 		/// Red channel creates a scalar or bump texture.
 		/// </summary>
 		R = 0,
@@ -172,11 +194,11 @@ namespace ObjParserC
 		/// </summary>
 		Z = 5,
 	};
-
-
-
-	using nbool = Nullable<bool>;
-	using nint = Nullable<int>;
-	using nfloat = Nullable<float>;
-	using ncolor = Nullable<ColorF>;
 }
+
+using nbool = ObjParserC::Nullable<bool>;
+using nint = ObjParserC::Nullable<int32_t>;
+using nuint = ObjParserC::Nullable<uint32_t>;
+using nfloat = ObjParserC::Nullable<float>;
+using ncolor = ObjParserC::Nullable<ObjParserC::ColorF>;
+using nvec = ObjParserC::Nullable<LinearC::Vectors::Vector3>;

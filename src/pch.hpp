@@ -32,3 +32,6 @@ template <typename T> using Method = T*;
 #include <Utils/StringExtensions/StringExtensions.hpp>
 #include <Utils/Formatter/Formatter.hpp>
 #include <LineReader/LineReader.hpp>
+
+#include <MTLTexture/MTLTexture.hpp>
+#include <MTLMaterial/MTLMaterial.hpp>
