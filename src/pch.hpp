@@ -21,7 +21,7 @@ const uint32_t EpsAsUInt32 = 0x00000001;
 const float NaN = *(float*)&NaNAsUInt32;
 const float PositiveInfinity = *(float*)&PosIAsUInt32;
 const float NegativeInfinity = *(float*)&NegIAsUInt32;
-const float Epsilon = *(float*)EpsAsUInt32;
+const float Epsilon = *(float*)&EpsAsUInt32;
 constexpr auto StringEmpty = "";
 constexpr auto WStringEmpty = L"";
 
@@ -29,4 +29,5 @@ template <typename T> using Method = T*;
 
 #include <Array.hpp>
 #include <Utils/StringExtensions.hpp>
-
+#include <Utils/Formatter.hpp>
+#include <LineReader.hpp>

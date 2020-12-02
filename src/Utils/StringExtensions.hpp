@@ -6,28 +6,24 @@ namespace ObjParserC::Utils
 {
 	struct StringExtensions final
 	{
-		enum class StringSplitOptions : int32_t
-		{
-			None,
-			RemoveEmptyEntries,
-		};
-
 		static int32_t StrLen(const char* str);
 		static bool StrComp(const char* str1, const char* str2);
-		static strings Split(const std::string& str, chars* separator, StringSplitOptions options);
-		static wstrings Split(const std::wstring& str, wchars* separator, StringSplitOptions options);
+		static strings Split(const std::string& str, chars* separator);
+		static wstrings Split(const std::wstring& str, wchars* separator);
 
-		static inline bool IsEmpty(const std::string& str);
-		static inline bool IsEmpty(const std::wstring& str);
-		static inline bool IsLatin(wchar_t c);
-		static inline bool IsAscii(wchar_t c);
-		static inline bool IsWhiteSpace(char c);
-		static inline bool IsWhiteSpace(wchar_t c);
-		static inline bool IsWhiteSpace(const std::string& str);
-		static inline bool IsWhiteSpace(const std::wstring& str);
+		static bool IsEmpty(const std::string& str);
+		static bool IsEmpty(const std::wstring& str);
+		static bool IsLatin(wchar_t c);
+		static bool IsAscii(wchar_t c);
+		static bool IsWhiteSpace(char c);
+		static bool IsWhiteSpace(wchar_t c);
+		static bool IsWhiteSpace(const std::string& str);
+		static bool IsWhiteSpace(const std::wstring& str);
 
-		static void ToLower(const std::string& str);
-		static void ToUpper(const std::string& str);
+		static std::string ToLower(const std::string& str);
+		static std::wstring ToLower(const std::wstring& str);
+		static std::string ToUpper(const std::string& str);
+		static std::wstring ToUpper(const std::wstring& str);
 		static std::string ToNarrow(const std::wstring& str);
 		static std::wstring ToWide(const std::string& str);
 		static std::string Format(const char* format, ...);

@@ -11,12 +11,15 @@ namespace ObjParserC
 		int32_t length_;
 
 	public:
+		Array() : Array(0)
+		{
+		}
 		Array(int32_t count)
 		{
 			if (count <= 0) count = 0;
 			this->ptr_ = new T[count];
 			this->length_ = count;
-
+			std::memset(this->ptr_, 0, sizeof(T) * count);
 		}
 		Array(const Array& safeArray)
 		{
@@ -72,6 +75,7 @@ namespace ObjParserC
 			{
 
 				auto ptr = new T[size];
+				std::memset(ptr, 0, sizeof(T) * size);
 				std::copy_n(this->ptr_, this->length_, ptr);
 				delete[] this->ptr_;
 				this->ptr_ = ptr;

@@ -9,12 +9,12 @@ namespace ObjParserC::Utils
 	{
 		int32_t result = (int32_t)str;
 		while (*str++) {}
-		return (int32_t)str - result;
+		return (int32_t)str - result - 1;
 	}
 
 	bool StringExtensions::StrComp(const char* str1, const char* str2)
 	{
-		while (*str1 != NULL && *str2 != NULL)
+		while (*str1 != NULL || *str2 != NULL)
 		{
 
 			if (*str1++ != *str2++) return false;
@@ -24,7 +24,7 @@ namespace ObjParserC::Utils
 		return true;
 	}
 
-	strings StringExtensions::Split(const std::string& str, chars* separator, StringSplitOptions options)
+	strings StringExtensions::Split(const std::string& str, chars* separator)
 	{
 		if (!separator || separator->Length() == 0)
 		{
@@ -35,7 +35,8 @@ namespace ObjParserC::Utils
 
 		}
 		
-		char* ptr = (char*)(&str[0]);
+		auto string = str;
+		char* ptr = (char*)(&string[0]);
 		char* delim = &((*separator)[0]);
 		char* next_token = nullptr;
 
@@ -47,16 +48,14 @@ namespace ObjParserC::Utils
 
 			auto string = std::string(tok);
 			tok = ::strtok_s(NULL, delim, &next_token);
-
-			if (options == StringSplitOptions::RemoveEmptyEntries && string == StringEmpty) continue;
-			else result.push_back(string);
+			result.push_back(string);
 
 		}
 
 		return strings(result);
 	}
 
-	wstrings StringExtensions::Split(const std::wstring& str, wchars* separator, StringSplitOptions options)
+	wstrings StringExtensions::Split(const std::wstring& str, wchars* separator)
 	{
 		if (!separator || separator->Length() == 0)
 		{
@@ -67,7 +66,8 @@ namespace ObjParserC::Utils
 
 		}
 
-		wchar_t* ptr = (wchar_t*)(&str[0]);
+		auto string = str;
+		wchar_t* ptr = (wchar_t*)(&string[0]);
 		wchar_t* delim = &((*separator)[0]);
 		wchar_t* next_token = nullptr;
 
@@ -79,36 +79,34 @@ namespace ObjParserC::Utils
 
 			auto string = std::wstring(tok);
 			tok = ::wcstok_s(NULL, delim, &next_token);
-
-			if (options == StringSplitOptions::RemoveEmptyEntries && string == WStringEmpty) continue;
-			else result.push_back(string);
+			result.push_back(string);
 
 		}
 
 		return wstrings(result);
 	}
 
-	inline bool StringExtensions::IsEmpty(const std::string& str)
+	bool StringExtensions::IsEmpty(const std::string& str)
 	{
 		return str.size() == 0;
 	}
 
-	inline bool StringExtensions::IsEmpty(const std::wstring& str)
+	bool StringExtensions::IsEmpty(const std::wstring& str)
 	{
 		return str.size() == 0;
 	}
 
-	inline bool StringExtensions::IsLatin(wchar_t c)
+	bool StringExtensions::IsLatin(wchar_t c)
 	{
-		return c <= 'ÿ';
+		return c <= 255;
 	}
 
-	inline bool StringExtensions::IsAscii(wchar_t c)
+	bool StringExtensions::IsAscii(wchar_t c)
 	{
-		return c <= '\u007f';
+		return c <= 127;
 	}
 
-	inline bool StringExtensions::IsWhiteSpace(char c)
+	bool StringExtensions::IsWhiteSpace(char c)
 	{
 		switch (c)
 		{
@@ -127,7 +125,7 @@ namespace ObjParserC::Utils
 		}
 	}
 
-	inline bool StringExtensions::IsWhiteSpace(wchar_t c)
+	bool StringExtensions::IsWhiteSpace(wchar_t c)
 	{
 		switch (c)
 		{
@@ -146,7 +144,7 @@ namespace ObjParserC::Utils
 		}
 	}
 
-	inline bool StringExtensions::IsWhiteSpace(const std::string& str)
+	bool StringExtensions::IsWhiteSpace(const std::string& str)
 	{
 		for (uint32_t i = 0; i < str.length(); i++)
 		{
@@ -163,7 +161,7 @@ namespace ObjParserC::Utils
 		return true;
 	}
 
-	inline bool StringExtensions::IsWhiteSpace(const std::wstring& str)
+	bool StringExtensions::IsWhiteSpace(const std::wstring& str)
 	{
 		for (uint32_t i = 0; i < str.length(); i++)
 		{
@@ -180,32 +178,72 @@ namespace ObjParserC::Utils
 		return true;
 	}
 
-	void StringExtensions::ToLower(const std::string& str)
+	std::string StringExtensions::ToLower(const std::string& str)
 	{
-		if (StringExtensions::IsEmpty(str)) return;
-		auto ptr = (char*)&str[0];
-		
-		while (*ptr++)
+		if (StringExtensions::IsEmpty(str)) return StringEmpty;
+		std::string result = std::string(str);
+		auto ptr = (char*)&result[0];
+
+		while (*ptr)
 		{
 
-			char& c = *ptr;
+			char& c = *ptr++;
 			if (c >= 'A' && c <= 'Z') c |= 0x20;
 
 		}
+
+		return result;
 	}
 
-	void StringExtensions::ToUpper(const std::string& str)
+	std::wstring StringExtensions::ToLower(const std::wstring& str)
 	{
-		if (StringExtensions::IsEmpty(str)) return;
-		auto ptr = (char*)&str[0];
+		if (StringExtensions::IsEmpty(str)) return WStringEmpty;
+		std::wstring result = std::wstring(str);
+		auto ptr = (wchar_t*)&result[0];
 
-		while (*ptr++)
+		while (*ptr)
 		{
 
-			char& c = *ptr;
+			wchar_t& c = *ptr++;
+			if (c >= 'A' && c <= 'Z') c |= 0x20;
+
+		}
+
+		return result;
+	}
+
+	std::string StringExtensions::ToUpper(const std::string& str)
+	{
+		if (StringExtensions::IsEmpty(str)) return StringEmpty;
+		std::string result = std::string(str);
+		auto ptr = (char*)&result[0];
+
+		while (*ptr)
+		{
+
+			char& c = *ptr++;
 			if (c >= 'a' && c <= 'z') c &= 0x5F;
 
 		}
+
+		return result;
+	}
+
+	std::wstring StringExtensions::ToUpper(const std::wstring& str)
+	{
+		if (StringExtensions::IsEmpty(str)) return WStringEmpty;
+		std::wstring result = std::wstring(str);
+		auto ptr = (wchar_t*)&result[0];
+
+		while (*ptr)
+		{
+
+			wchar_t& c = *ptr++;
+			if (c >= 'a' && c <= 'z') c &= 0x5F;
+
+		}
+
+		return result;
 	}
 
 	std::string StringExtensions::ToNarrow(const std::wstring& str)
@@ -236,7 +274,7 @@ namespace ObjParserC::Utils
 
 	std::string StringExtensions::Replace(const std::string& str, char oldChar, char newChar)
 	{
-		chars arr = chars(str.length());
+		chars arr = chars(str.length() + 1);
 		
 		for (uint32_t i = 0; i < str.length(); ++i)
 		{
@@ -252,7 +290,7 @@ namespace ObjParserC::Utils
 	
 	std::wstring StringExtensions::Replace(const std::wstring& str, wchar_t oldChar, wchar_t newChar)
 	{
-		wchars arr = wchars(str.length());
+		wchars arr = wchars(str.length() + 1);
 
 		for (uint32_t i = 0; i < str.length(); ++i)
 		{
