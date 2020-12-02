@@ -27,7 +27,8 @@ constexpr auto WStringEmpty = L"";
 
 template <typename T> using Method = T*;
 
-#include <Array.hpp>
-#include <Utils/StringExtensions.hpp>
-#include <Utils/Formatter.hpp>
-#include <LineReader.hpp>
+#include <Array/Array.hpp>
+#include <Shared/Shared.hpp>
+#include <Utils/StringExtensions/StringExtensions.hpp>
+#include <Utils/Formatter/Formatter.hpp>
+#include <LineReader/LineReader.hpp>

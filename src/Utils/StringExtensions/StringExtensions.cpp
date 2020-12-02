@@ -1,5 +1,5 @@
 #include <pch.hpp>
-#include <Utils/StringExtensions.hpp>
+#include <Utils/StringExtensions/StringExtensions.hpp>
 
 
 
@@ -35,8 +35,8 @@ namespace ObjParserC::Utils
 
 		}
 		
-		auto string = str;
-		char* ptr = (char*)(&string[0]);
+		auto clone = str;
+		char* ptr = (char*)(&clone[0]);
 		char* delim = &((*separator)[0]);
 		char* next_token = nullptr;
 
@@ -66,8 +66,8 @@ namespace ObjParserC::Utils
 
 		}
 
-		auto string = str;
-		wchar_t* ptr = (wchar_t*)(&string[0]);
+		auto clone = str;
+		wchar_t* ptr = (wchar_t*)(&clone[0]);
 		wchar_t* delim = &((*separator)[0]);
 		wchar_t* next_token = nullptr;
 
