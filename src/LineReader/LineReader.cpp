@@ -211,69 +211,127 @@ namespace ObjParserC
 
 	void LineReader::ReadUTF16LEString(std::vector<wchar_t>* string)
 	{
-		wchar_t c;
-
-		while (!this->EndOfStream())
+		while (true)
 		{
 
-			::fread_s(&c, 2, 2, 1, this->_handle);
-			this->_position += 2;
-
-			if (c == '\r')
+			// Read till we encounter line terminator or end of buffer
+			// Note since we read wchar_t there might be a byte overflow, so _bufPos + 1 < _bufLen
+			while (this->_bufPos + 1 < this->_bufLen)
 			{
 
-				string->push_back(0);
-				::fread_s(&c, 2, 2, 1, this->_handle);
-				if (c == '\n') { this->_position += 2; return; }
-				this->Position(this->_position);
-				return;
+				// Read current char from buffer
+				wchar_t c = ((wchar_t*)this->_buffer)[this->_bufPos];
+				this->_bufPos += 2;
+
+				// If char == '\r' then mark it as the last character so we can skip '\n' in the next line
+				if (c == '\r')
+				{
+
+					string->push_back(0);
+
+					// we need to check whether next char is '\n'
+					if (this->_bufPos + 2 > this->_bufLen)
+					{
+
+						if (!this->UpdateBuffer()) return;
+
+					}
+
+					if (((wchar_t*)this->_buffer)[this->_bufPos] == '\n')
+					{
+
+						this->_bufPos += 2;
+						return;
+
+					}
+
+					return;
+
+				}
+
+				// If char == '\n' return current string
+				else if (c == '\n')
+				{
+
+					string->push_back(0);
+					return;
+
+				}
+
+				// Else push current char to the vector
+				string->push_back(c);
 
 			}
-			if (c == '\n')
-			{
 
-				string->push_back(0);
-				return;
+			// If we reached end of file
+			if (!this->UpdateBuffer()) return;
 
-			}
-
-			string->push_back(c);
+			// Else we continue reading using updated buffer
 
 		}
 	}
 
 	void LineReader::ReadUTF16BEString(std::vector<wchar_t>* string)
 	{
-		wchar_t c;
-
-		while (!this->EndOfStream())
+		while (true)
 		{
 
-			::fread_s(&c, 2, 2, 1, this->_handle);
-			this->_position += 2;
-
-			// Endian swap
-			c = (c >> 8) | ((uint8_t)c << 8);
-
-			if (c == '\r')
+			// Read till we encounter line terminator or end of buffer
+			// Note since we read wchar_t there might be a byte overflow, so _bufPos + 1 < _bufLen
+			while (this->_bufPos + 1 < this->_bufLen)
 			{
 
-				string->push_back(0);
-				::fread_s(&c, 2, 2, 1, this->_handle);
-				if (c == '\n') { this->_position += 2; return; }
-				this->Position(this->_position);
-				return;
+				// Read current char from buffer
+				wchar_t c = ((wchar_t*)this->_buffer)[this->_bufPos];
+				this->_bufPos += 2;
+
+				// Endian swap
+				c = (c >> 8) | ((uint8_t)c << 8);
+
+				// If char == '\r' then mark it as the last character so we can skip '\n' in the next line
+				if (c == '\r')
+				{
+
+					string->push_back(0);
+
+					// we need to check whether next char is '\n'
+					if (this->_bufPos + 2 > this->_bufLen)
+					{
+
+						if (!this->UpdateBuffer()) return;
+
+					}
+
+					if (((wchar_t*)this->_buffer)[this->_bufPos] == '\n\0')
+					{
+
+						this->_bufPos += 2;
+						return;
+
+					}
+
+					return;
+
+				}
+
+				// If char == '\n' return current string
+				else if (c == '\n')
+				{
+
+					string->push_back(0);
+					return;
+
+				}
+
+				// Else push current char to the vector
+				string->push_back(c);
 
 			}
-			if (c == '\n')
-			{
 
-				string->push_back(0);
-				return;
+			// If we reached end of file
+			if (!this->UpdateBuffer()) return;
 
-			}
-
-			string->push_back(c);
+			// Else we continue reading using updated buffer
 
 		}
 	}
