@@ -12,7 +12,11 @@ namespace ObjParserC
 		void ParseMTLReflection(MTLMaterial* material, LineReader* lr);
 
 	public:
-		std::vector<MTLMaterial>& Materials();
+		MTLLoader();
+		MTLLoader(const MTLLoader& loader);
+		MTLLoader& operator =(const MTLLoader& loader);
+
+		std::vector<MTLMaterial>* Materials();
 		void Load(LineReader* lr);
 		void Load(const std::wstring& file);
 	};

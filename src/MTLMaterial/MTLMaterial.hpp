@@ -17,7 +17,7 @@ namespace ObjParserC
 	    /// <summary>
 	    /// Name of the material.
 	    /// </summary>
-		std::wstring Name();
+		std::wstring& Name();
 	
 	    /// <summary>
 	    /// Ambient reflectivity of this material. This is a nullable value, if it does not 
@@ -195,15 +195,30 @@ namespace ObjParserC
 	    /// </summary>
 		MTLTexture* ReflCubeRight;
 	
+		/// <summary>
+		/// Initializes new material instance.
+		/// </summary>
+		MTLMaterial();
+
 	    /// <summary>
 	    /// Initializes new material instance.
 	    /// </summary>
 	    /// <param name="name">Name of the material.</param>
-		MTLMaterial(const std::wstring& name)
-		{
-			this->Name = name;
-		}
+		MTLMaterial(const std::wstring& name);
 	
+		/// <summary>
+		/// Copies data in the passed instances to the current instance.
+		/// </summary>
+		/// <param name="material">Instance to copy.</param>
+		MTLMaterial(const MTLMaterial& material);
+
+		/// <summary>
+		/// Assigns and copies all data from the instance passed to the current instance.
+		/// </summary>
+		/// <param name="material">Instance to copy.</param>
+		/// <returns>Reference to this instance.</returns>
+		MTLMaterial& operator =(const MTLMaterial& material);
+
 		/// <summary>
 		/// Gets name of this material.
 		/// </summary>

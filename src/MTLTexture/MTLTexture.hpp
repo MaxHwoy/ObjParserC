@@ -120,10 +120,28 @@ namespace ObjParserC
 		std::wstring Filename = WStringEmpty;
 
 		/// <summary>
-		/// Gets texture filename of this instance.
+		/// Initializes new instance of MTLTexture.
 		/// </summary>
-		/// <returns>Texture filename of this instance as a wide string.</returns>
-		std::wstring ToString();
+		MTLTexture();
+
+		/// <summary>
+		/// Copies data in the passed instances to the current instance.
+		/// </summary>
+		/// <param name="texture">Instance to copy.</param>
+		MTLTexture(const MTLTexture& texture);
+
+		/// <summary>
+		/// Copies data in the passed instances to the current instance.
+		/// </summary>
+		/// <param name="texture">Pointer to instance to copy.</param>
+		MTLTexture(MTLTexture* texture);
+
+		/// <summary>
+		/// Assigns and copies all data from the instance passed to the current instance.
+		/// </summary>
+		/// <param name="texture">Instance to copy.</param>
+		/// <returns>Reference to this instance.</returns>
+		MTLTexture& operator =(const MTLTexture& texture);
 
 		/// <summary>
 		/// Parses this MTLTexture using LineReader provided.

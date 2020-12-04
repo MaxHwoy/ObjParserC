@@ -17,5 +17,7 @@ namespace ObjParserC::Utils
 
 		static double ParseDouble(const std::string& str);
 		static double ParseDouble(const std::wstring& str);
+
+		static std::size_t CombineHashes(std::size_t h1, std::size_t h2);
 	};
 }

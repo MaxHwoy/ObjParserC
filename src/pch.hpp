@@ -7,11 +7,6 @@
 #include <filesystem>
 #include <unordered_map>
 
-#include <src/Vectors/IVector.hpp>
-#include <src/Vectors/Vector2.hpp>
-#include <src/Vectors/Vector3.hpp>
-#include <src/Vectors/Vector4.hpp>
-
 
 
 const uint32_t NaNAsUInt32 = 0xFFC00000;
@@ -32,6 +27,10 @@ template <typename T> using Method = T*;
 #include <Utils/StringExtensions/StringExtensions.hpp>
 #include <Utils/Formatter/Formatter.hpp>
 #include <LineReader/LineReader.hpp>
-
 #include <MTLTexture/MTLTexture.hpp>
 #include <MTLMaterial/MTLMaterial.hpp>
+#include <OBJMesh/OBJMesh.hpp>
+#include <MeshCollection/MeshCollection.hpp>
+#include <MTLLoader/MTLLoader.hpp>
+#include <OBJLoader/OBJLoader.hpp>
+

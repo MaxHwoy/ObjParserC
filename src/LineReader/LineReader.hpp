@@ -43,24 +43,25 @@ namespace ObjParserC
 		// Main
 		LineReader(const std::wstring& file);
 		LineReader(const LineReader& lr) = delete;
+		LineReader& operator =(const LineReader& lr) = delete;
 		~LineReader();
 
 		// Properties
-		std::wstring Current();
+		std::wstring& Current();
 		bool EndOfStream();
 		bool IsOutOfBounds();
 		bool IsValid();
-		wstrings Splits();
+		wstrings& Splits();
 
 		// Functions
 		bool ReadNext();
-		std::wstring ReadString();
+		std::wstring& ReadString();
 		int32_t ReadInt32();
 		uint32_t ReadUInt32();
 		float ReadSingle();
 		double ReadDouble();
-		LinearC::Vectors::Vector2 ReadVector2();
-		LinearC::Vectors::Vector3 ReadVector3();
-		LinearC::Vectors::Vector4 ReadVector4();
+		Vector2 ReadVector2();
+		Vector3 ReadVector3();
+		Vector4 ReadVector4();
 	};
 }

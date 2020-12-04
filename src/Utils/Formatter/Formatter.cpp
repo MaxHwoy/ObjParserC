@@ -77,41 +77,27 @@ namespace ObjParserC::Utils
 
 	float Formatter::ParseSingle(const std::string& str)
 	{
-		/*
-		Several case:
-		1. NaN value
-		2. Positive infinity like 
-		3. Negative infinity like
-		4. With a + symbol in front
-		5. With a - symbol in front
-		6. Has decimal . separator
-		7. Has scientific E or e with + or -
-		*/
-
-		if (str.length() == 0 || str == "NaN") return NaN;
-
-
-		return 0.0f;
+		return ::strtof(str.c_str(), nullptr);
 	}
 
 	float Formatter::ParseSingle(const std::wstring& str)
 	{
-
-
-		return 0.0f;
+		return ::wcstof(str.c_str(), nullptr);
 	}
 
 	double Formatter::ParseDouble(const std::string& str)
 	{
-
-
-		return 0.0;
+		return ::strtod(str.c_str(), nullptr);
 	}
 
 	double Formatter::ParseDouble(const std::wstring& str)
 	{
+		return ::wcstod(str.c_str(), nullptr);
+	}
 
-
-		return 0.0;
+	std::size_t Formatter::CombineHashes(std::size_t h1, std::size_t h2)
+	{
+		std::size_t num = (h1 << 5) | (h1 >> 27);
+		return (num + h1) ^ h2;
 	}
 }

@@ -44,7 +44,7 @@ namespace ObjParserC
 
 
 
-	std::wstring LineReader::Current()
+	std::wstring& LineReader::Current()
 	{
 		return this->_current;
 	}
@@ -69,11 +69,11 @@ namespace ObjParserC
 		if (position < 0) position = 0;
 		else if (position > this->_length) position = this->_length;
 
-		::fseek(this->_handle, this->_origin + position, SEEK_SET);
+		::fseek(this->_handle, (int32_t)(this->_origin + position), SEEK_SET);
 		this->_position = position;
 	}
 
-	wstrings LineReader::Splits()
+	wstrings& LineReader::Splits()
 	{
 		return this->_splits;
 	}
@@ -282,9 +282,11 @@ namespace ObjParserC
 		else
 		{
 
-			wchars separator = wchars(2);
+			wchars separator = wchars(3);
 			separator[0] = ' ';
 			separator[1] = '\t';
+			separator[2] = '\0';
+			this->_splitPos = 0;
 			this->_splits = ObjParserC::Utils::StringExtensions::Split(this->_current, &separator);
 
 		}
@@ -292,9 +294,9 @@ namespace ObjParserC
 		return true;
 	}
 
-	std::wstring LineReader::ReadString()
+	std::wstring& LineReader::ReadString()
 	{
-		if (this->IsOutOfBounds()) return WStringEmpty;
+		if (this->IsOutOfBounds()) return std::wstring(WStringEmpty);
 		return this->_splits[this->_splitPos++];
 	}
 
@@ -322,27 +324,27 @@ namespace ObjParserC
 		return ObjParserC::Utils::Formatter::ParseDouble(this->_splits[this->_splitPos++]);
 	}
 
-	LinearC::Vectors::Vector2 LineReader::ReadVector2()
+	Vector2 LineReader::ReadVector2()
 	{
 		auto x = this->ReadSingle();
 		auto y = this->ReadSingle();
-		return LinearC::Vectors::Vector2(x, y);
+		return Vector2(x, y);
 	}
 
-	LinearC::Vectors::Vector3 LineReader::ReadVector3()
+	Vector3 LineReader::ReadVector3()
 	{
 		auto x = this->ReadSingle();
 		auto y = this->ReadSingle();
 		auto z = this->ReadSingle();
-		return LinearC::Vectors::Vector3(x, y, z);
+		return Vector3(x, y, z);
 	}
 
-	LinearC::Vectors::Vector4 LineReader::ReadVector4()
+	Vector4 LineReader::ReadVector4()
 	{
 		auto x = this->ReadSingle();
 		auto y = this->ReadSingle();
 		auto z = this->ReadSingle();
 		auto w = this->ReadSingle();
-		return LinearC::Vectors::Vector4(x, y, z, w);
+		return Vector4(x, y, z, w);
 	}
 }

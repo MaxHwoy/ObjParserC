@@ -1,6 +1,8 @@
 #include <pch.hpp>
 #include <Utils/StringExtensions/StringExtensions.hpp>
 
+#pragma warning (disable : 4244)
+
 
 
 namespace ObjParserC::Utils
@@ -258,18 +260,60 @@ namespace ObjParserC::Utils
 
 	std::string StringExtensions::Format(const char* format, ...)
 	{
-		auto args = ::va_list();
+		::va_list args;
+		int32_t len;
+
 		va_start(args, format);
-		char buffer[0x100] { };
-		return std::string(buffer, std::vsprintf(buffer, format, args));
+		len = ::_vscprintf(format, args) + 1;
+
+		char* buffer = reinterpret_cast<char*>(::malloc(len * sizeof(char)));
+
+		if (buffer != nullptr)
+		{
+
+			auto count = ::vsprintf_s(buffer, len, format, args);
+			std::string result = std::string(buffer, count);
+			::free(buffer);
+			va_end(args);
+			return result;
+
+		}
+		else
+		{
+
+			va_end(args);
+			return StringEmpty;
+
+		}
 	}
 
 	std::wstring StringExtensions::Format(const wchar_t* format, ...)
 	{
-		auto args = ::va_list();
+		::va_list args;
+		int32_t len;
+
 		va_start(args, format);
-		wchar_t buffer[0x100]{ };
-		return std::wstring(buffer, std::vswprintf(buffer, format, args));
+		len = ::_vscwprintf(format, args) + 1;
+
+		wchar_t* buffer = reinterpret_cast<wchar_t*>(::malloc(len * sizeof(wchar_t)));
+
+		if (buffer != nullptr)
+		{
+
+			auto count = ::vswprintf_s(buffer, len, format, args);
+			std::wstring result = std::wstring(buffer, count);
+			::free(buffer);
+			va_end(args);
+			return result;
+
+		}
+		else
+		{
+
+			va_end(args);
+			return WStringEmpty;
+
+		}
 	}
 
 	std::string StringExtensions::Replace(const std::string& str, char oldChar, char newChar)

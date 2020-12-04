@@ -35,6 +35,135 @@ namespace ObjParserC
 			this->_value = nullable._value;
 			this->_exists = nullable._exists;
 		}
+		Nullable& operator =(const Nullable& nullable)
+		{
+			if (this != &nullable)
+			{
+
+				this->_value = nullable._value;
+				this->_exists = nullable._exists;
+
+			}
+
+			return *this;
+		}
+	};
+
+	struct Vector2
+	{
+		float X;
+		float Y;
+
+		Vector2()
+		{
+			this->X = 0.0f;
+			this->Y = 0.0f;
+		}
+		Vector2(float x, float y)
+		{
+			this->X = x;
+			this->Y = y;
+		}
+		Vector2(const Vector2& vector)
+		{
+			this->X = vector.X;
+			this->Y = vector.Y;
+		}
+		Vector2& operator =(const Vector2& vector)
+		{
+			if (this != &vector)
+			{
+
+				this->X = vector.X;
+				this->Y = vector.Y;
+
+			}
+			
+			return *this;
+		}
+	};
+
+	struct Vector3
+	{
+		float X;
+		float Y;
+		float Z;
+
+		Vector3()
+		{
+			this->X = 0.0f;
+			this->Y = 0.0f;
+			this->Z = 0.0f;
+		}
+		Vector3(float x, float y, float z)
+		{
+			this->X = x;
+			this->Y = y;
+			this->Z = z;
+		}
+		Vector3(const Vector3& vector)
+		{
+			this->X = vector.X;
+			this->Y = vector.Y;
+			this->Z = vector.Z;
+		}
+		Vector3& operator =(const Vector3& vector)
+		{
+			if (this != &vector)
+			{
+
+				this->X = vector.X;
+				this->Y = vector.Y;
+				this->Z = vector.Z;
+
+			}
+
+			return *this;
+		}
+	};
+
+	struct Vector4
+	{
+		float X;
+		float Y;
+		float Z;
+		float W;
+
+		Vector4()
+		{
+			this->X = 0.0f;
+			this->Y = 0.0f;
+			this->Z = 0.0f;
+			this->W = 0.0f;
+		}
+		Vector4(float x, float y, float z, float w)
+		{
+			this->X = x;
+			this->Y = y;
+			this->Z = z;
+			this->W = w;
+		}
+		Vector4(const Vector4& vector)
+		{
+			this->X = vector.X;
+			this->Y = vector.Y;
+			this->Z = vector.Z;
+			this->W = vector.W;
+		}
+		Vector4& operator =(const Vector4& vector)
+		{
+			if (this != &vector)
+			{
+
+				this->X = vector.X;
+				this->Y = vector.Y;
+				this->Z = vector.Z;
+				this->W = vector.W;
+
+			}
+
+			return *this;
+		}
 	};
 
 	struct ColorF
@@ -48,6 +177,13 @@ namespace ObjParserC
 		{
 			this->A = this->R = this->G = this->B = 0.0f;
 		}
+		ColorF(float r, float g, float b, float a)
+		{
+			this->R = r;
+			this->G = g;
+			this->B = b;
+			this->A = a;
+		}
 		ColorF(const ColorF& color)
 		{
 			this->R = color.R;
@@ -55,12 +191,19 @@ namespace ObjParserC
 			this->B = color.B;
 			this->A = color.A;
 		}
-		ColorF(float r, float g, float b, float a)
+		ColorF& operator =(const ColorF& color)
 		{
-			this->R = r;
-			this->G = g;
-			this->B = b;
-			this->A = a;
+			if (this != &color)
+			{
+
+				this->R = color.R;
+				this->G = color.G;
+				this->B = color.B;
+				this->A = color.A;
+
+			}
+
+			return *this;
 		}
 	};
 
@@ -201,4 +344,4 @@ using nint = ObjParserC::Nullable<int32_t>;
 using nuint = ObjParserC::Nullable<uint32_t>;
 using nfloat = ObjParserC::Nullable<float>;
 using ncolor = ObjParserC::Nullable<ObjParserC::ColorF>;
-using nvec = ObjParserC::Nullable<LinearC::Vectors::Vector3>;
+using nvec = ObjParserC::Nullable<ObjParserC::Vector3>;

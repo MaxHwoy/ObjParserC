@@ -15,9 +15,85 @@ namespace ObjParserC
 		{ L"Z", ImfchanType::Z },
 	};
 
-	std::wstring MTLTexture::ToString()
+	MTLTexture::MTLTexture()
 	{
-		return this->Filename.length() == 0 ? L"No Texture" : this->Filename;
+		this->BlendU = nbool();
+		this->BlendV = nbool();
+		this->Bm = nfloat();
+		this->Boost = nfloat();
+		this->CC = nbool();
+		this->Clamp = nbool();
+		this->Filename = WStringEmpty;
+		this->Imfchan = ImfchanType::Invalid;
+		this->MMBase = nfloat();
+		this->MMGain = nfloat();
+		this->O = nvec();
+		this->S = nvec();
+		this->T = nvec();
+		this->TexRes = nint();
+	}
+
+	MTLTexture::MTLTexture(const MTLTexture& texture)
+	{
+		this->BlendU = texture.BlendU;
+		this->BlendV = texture.BlendV;
+		this->Bm = texture.Bm;
+		this->Boost = texture.Boost;
+		this->CC = texture.CC;
+		this->Clamp = texture.Clamp;
+		this->Filename = texture.Filename;
+		this->Imfchan = texture.Imfchan;
+		this->MMBase = texture.MMBase;
+		this->MMGain = texture.MMGain;
+		this->O = texture.O;
+		this->S = texture.S;
+		this->T = texture.T;
+		this->TexRes = texture.TexRes;
+	}
+
+	MTLTexture::MTLTexture(MTLTexture* texture)
+	{
+		if (this == texture) return;
+
+		this->BlendU = texture->BlendU;
+		this->BlendV = texture->BlendV;
+		this->Bm = texture->Bm;
+		this->Boost = texture->Boost;
+		this->CC = texture->CC;
+		this->Clamp = texture->Clamp;
+		this->Filename = texture->Filename;
+		this->Imfchan = texture->Imfchan;
+		this->MMBase = texture->MMBase;
+		this->MMGain = texture->MMGain;
+		this->O = texture->O;
+		this->S = texture->S;
+		this->T = texture->T;
+		this->TexRes = texture->TexRes;
+	}
+
+	MTLTexture& MTLTexture::operator =(const MTLTexture& texture)
+	{
+		if (this != &texture)
+		{
+
+			this->BlendU = texture.BlendU;
+			this->BlendV = texture.BlendV;
+			this->Bm = texture.Bm;
+			this->Boost = texture.Boost;
+			this->CC = texture.CC;
+			this->Clamp = texture.Clamp;
+			this->Filename = texture.Filename;
+			this->Imfchan = texture.Imfchan;
+			this->MMBase = texture.MMBase;
+			this->MMGain = texture.MMGain;
+			this->O = texture.O;
+			this->S = texture.S;
+			this->T = texture.T;
+			this->TexRes = texture.TexRes;
+
+		}
+
+		return *this;
 	}
 
 	void MTLTexture::Parse(LineReader* lr)

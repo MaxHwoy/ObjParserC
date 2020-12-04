@@ -5,9 +5,30 @@
 
 namespace ObjParserC
 {
-	std::vector<MTLMaterial>& MTLLoader::Materials()
+	MTLLoader::MTLLoader()
 	{
-		return this->_materials;
+	}
+
+	MTLLoader::MTLLoader(const MTLLoader& loader)
+	{
+		this->_materials = loader._materials;
+	}
+
+	MTLLoader& MTLLoader::operator =(const MTLLoader& loader)
+	{
+		if (this != &loader)
+		{
+
+			this->_materials = loader._materials;
+
+		}
+
+		return *this;
+	}
+
+	std::vector<MTLMaterial>* MTLLoader::Materials()
+	{
+		return &this->_materials;
 	}
 
 	ColorF MTLLoader::ReadColorF(LineReader* lr)
@@ -83,8 +104,6 @@ namespace ObjParserC
 
 	void MTLLoader::Load(LineReader* lr)
 	{
-		std::vector<MTLMaterial> result;
-
 		// First, find very first material because all other arguments are
 		// irrelevant without a material assigned to them
 		while (lr->ReadNext())
@@ -99,8 +118,8 @@ namespace ObjParserC
 
 		if (lr->EndOfStream()) return;
 		
-		MTLMaterial currentMTL = MTLMaterial(lr->ReadString());
-		result.push_back(currentMTL);
+		this->_materials.push_back(MTLMaterial(lr->ReadString()));
+		MTLMaterial* currentMTL = &(this->_materials.at(0));
 
 		while (lr->ReadNext())
 		{
@@ -113,36 +132,37 @@ namespace ObjParserC
 			{
 
 				auto name = lr->ReadString();
-				currentMTL = MTLMaterial(name);
-				this->_materials.push_back(currentMTL);
+				auto count = this->_materials.size();
+				this->_materials.push_back(MTLMaterial(name));
+				currentMTL = &(this->_materials.at(count));
 				continue;
 
 			}
 			if (arg == L"kd")
 			{
 
-				currentMTL.Kd = ncolor(this->ReadColorF(lr));
+				currentMTL->Kd = ncolor(this->ReadColorF(lr));
 				continue;
 
 			}
 			if (arg == L"ka")
 			{
 
-				currentMTL.Ka = ncolor(this->ReadColorF(lr));
+				currentMTL->Ka = ncolor(this->ReadColorF(lr));
 				continue;
 
 			}
 			if (arg == L"ks")
 			{
 
-				currentMTL.Ks = ncolor(this->ReadColorF(lr));
+				currentMTL->Ks = ncolor(this->ReadColorF(lr));
 				continue;
 
 			}
 			if (arg == L"tf")
 			{
 
-				currentMTL.Tf = ncolor(this->ReadColorF(lr));
+				currentMTL->Tf = ncolor(this->ReadColorF(lr));
 				continue;
 
 			}
@@ -155,96 +175,96 @@ namespace ObjParserC
 				if (lower != L"-halo")
 				{
 
-					currentMTL.D = ObjParserC::Utils::Formatter::ParseSingle(inter);
+					currentMTL->D = ObjParserC::Utils::Formatter::ParseSingle(inter);
 					continue;
 
 				}
 
-				currentMTL.Halo = nbool(true);
-				currentMTL.D = lr->ReadSingle();
+				currentMTL->Halo = nbool(true);
+				currentMTL->D = lr->ReadSingle();
 				continue;
 
 			}
 			if (arg == L"tr")
 			{
 
-				currentMTL.D = 1.0f - lr->ReadSingle();
+				currentMTL->D = 1.0f - lr->ReadSingle();
 				continue;
 
 			}
 			if (arg == L"ns")
 			{
 
-				currentMTL.Ns = lr->ReadSingle();
+				currentMTL->Ns = lr->ReadSingle();
 				continue;
 
 			}
 			if (arg == L"sharpness")
 			{
 
-				currentMTL.Sharpness = lr->ReadSingle();
+				currentMTL->Sharpness = lr->ReadSingle();
 				continue;
 
 			}
 			if (arg == L"ni")
 			{
 
-				currentMTL.Ni = lr->ReadSingle();
+				currentMTL->Ni = lr->ReadSingle();
 				continue;
 
 			}
 			if (arg == L"illum")
 			{
 
-				currentMTL.Illuminance = (IlluminanceType)lr->ReadInt32();
+				currentMTL->Illuminance = (IlluminanceType)lr->ReadInt32();
 				continue;
 
 			}
 			if (arg == L"map_ka")
 			{
 
-				currentMTL.MapKa = new MTLTexture();
-				currentMTL.MapKa->Parse(lr);
+				currentMTL->MapKa = new MTLTexture();
+				currentMTL->MapKa->Parse(lr);
 				continue;
 
 			}
 			if (arg == L"map_kd")
 			{
 
-				currentMTL.MapKd = new MTLTexture();
-				currentMTL.MapKd->Parse(lr);
+				currentMTL->MapKd = new MTLTexture();
+				currentMTL->MapKd->Parse(lr);
 				continue;
 
 			}
 			if (arg == L"map_ks")
 			{
 
-				currentMTL.MapKs = new MTLTexture();
-				currentMTL.MapKs->Parse(lr);
+				currentMTL->MapKs = new MTLTexture();
+				currentMTL->MapKs->Parse(lr);
 				continue;
 
 			}
 			if (arg == L"map_ns")
 			{
 
-				currentMTL.MapNs = new MTLTexture();
-				currentMTL.MapNs->Parse(lr);
+				currentMTL->MapNs = new MTLTexture();
+				currentMTL->MapNs->Parse(lr);
 				continue;
 
 			}
 			if (arg == L"map_d")
 			{
 
-				currentMTL.MapD = new MTLTexture();
-				currentMTL.MapD->Parse(lr);
+				currentMTL->MapD = new MTLTexture();
+				currentMTL->MapD->Parse(lr);
 				continue;
 
 			}
 			if (arg == L"decal")
 			{
 
-				currentMTL.Decal = new MTLTexture();
-				currentMTL.Decal->Parse(lr);
+				currentMTL->Decal = new MTLTexture();
+				currentMTL->Decal->Parse(lr);
 				continue;
 
 			}
@@ -252,30 +272,30 @@ namespace ObjParserC
 			{
 
 				auto val = ObjParserC::Utils::StringExtensions::ToLower(lr->ReadString());
-				currentMTL.MapAat = nbool(val == L"on");
+				currentMTL->MapAat = nbool(val == L"on");
 				continue;
 
 			}
 			if (arg == L"disp")
 			{
 
-				currentMTL.Disp = new MTLTexture();
-				currentMTL.Disp->Parse(lr);
+				currentMTL->Disp = new MTLTexture();
+				currentMTL->Disp->Parse(lr);
 				continue;
 
 			}
 			if (arg == L"bump" || arg == L"map_bump")
 			{
 
-				currentMTL.MapBump = new MTLTexture();
-				currentMTL.MapBump->Parse(lr);
+				currentMTL->MapBump = new MTLTexture();
+				currentMTL->MapBump->Parse(lr);
 				continue;
 
 			}
 			if (arg == L"refl")
 			{
 
-				this->ParseMTLReflection(&currentMTL, lr);
+				this->ParseMTLReflection(currentMTL, lr);
 				continue;
 
 			}
