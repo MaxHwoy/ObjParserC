@@ -59,7 +59,7 @@ namespace ObjParserC::Utils
 
 	wstrings StringExtensions::Split(const std::wstring& str, wchars* separator)
 	{
-		if (!separator || separator->Length() == 0)
+		if (separator == nullptr || separator->Length() == 0)
 		{
 
 			wstrings result = wstrings(1);

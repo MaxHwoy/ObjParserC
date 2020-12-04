@@ -13,6 +13,9 @@ namespace ObjParserC
 		this->_origin = 0;
 		this->_length = 0;
 		this->_position = 0;
+		this->_buffer = nullptr;
+		this->_bufLen = 0;
+		this->_bufPos;
 		this->_splitPos = 0;
 		this->_currentLine = 0;
 		this->_filename = WStringEmpty;
@@ -20,6 +23,8 @@ namespace ObjParserC
 		this->_splits = empty;
 		this->_encoding = Encoding::ANSI;
 		this->_handle = nullptr;
+
+		this->_bufAlloc = 0x500000;
 
 		if (!std::filesystem::exists(file)) return;
 
@@ -31,8 +36,10 @@ namespace ObjParserC
 
 		this->_length = stat32.st_size;
 		this->_is_ready = true;
+		if (this->_length == 0) return;
 
 		this->DetectEncoding();
+		this->InitBuffer();
 	}
 
 	LineReader::~LineReader()
@@ -40,6 +47,7 @@ namespace ObjParserC
 		if (!this->IsValid()) return;
 		::fclose(this->_handle);
 		this->_handle = nullptr;
+		this->CleanBuffer();
 	}
 
 
@@ -51,7 +59,7 @@ namespace ObjParserC
 
 	bool LineReader::EndOfStream()
 	{
-		return this->_position == this->_length;
+		return this->_position == this->_length && this->_bufPos == this->_bufLen;
 	}
 
 	bool LineReader::IsOutOfBounds()
@@ -64,6 +72,11 @@ namespace ObjParserC
 		return this->_is_ready && this->_handle;
 	}
 
+	int64_t LineReader::Position()
+	{
+		return this->_position - this->_bufAlloc + this->_bufPos;
+	}
+
 	void LineReader::Position(int64_t position)
 	{
 		if (position < 0) position = 0;
@@ -71,6 +84,7 @@ namespace ObjParserC
 
 		::fseek(this->_handle, (int32_t)(this->_origin + position), SEEK_SET);
 		this->_position = position;
+		this->UpdateBuffer();
 	}
 
 	wstrings& LineReader::Splits()
@@ -131,33 +145,60 @@ namespace ObjParserC
 
 	void LineReader::ReadANSIString(std::vector<wchar_t>* string)
 	{
-		char c;
-
-		while (!this->EndOfStream())
+		while (true)
 		{
 
-			::fread_s(&c, 1, 1, 1, this->_handle);
-			++this->_position;
-
-			if (c == '\r')
+			// Read till we encounter line terminator or end of buffer
+			while (this->_bufPos < this->_bufLen)
 			{
 
-				string->push_back(0);
-				::fread_s(&c, 1, 1, 1, this->_handle);
-				if (c == '\n') { ++this->_position; return; }
-				this->Position(this->_position);
-				return;
+				// Read current char from buffer
+				char c = this->_buffer[this->_bufPos++];
+
+				// If char == '\r' then mark it as the last character so we can skip '\n' in the next line
+				if (c == '\r')
+				{
+
+					string->push_back(0);
+					
+					// we need to check whether next char is '\n'
+					if (this->_bufPos == this->_bufLen)
+					{
+
+						if (!this->UpdateBuffer()) return;
+
+					}
+
+					if (this->_buffer[this->_bufPos] == '\n')
+					{
+
+						++this->_bufPos;
+						return;
+
+					}
+
+					return;
+
+				}
+
+				// If char == '\n' return current string
+				else if (c == '\n')
+				{
+
+					string->push_back(0);
+					return;
+
+				}
+
+				// Else push current char to the vector
+				string->push_back(c);
 
 			}
-			if (c == '\n')
-			{
 
-				string->push_back(0);
-				return;
+			// If we reached end of file
+			if (!this->UpdateBuffer()) return;
 
-			}
-
-			string->push_back(c);
+			// Else we continue reading using updated buffer
 
 		}
 	}
@@ -237,9 +278,72 @@ namespace ObjParserC
 		}
 	}
 
+	void LineReader::InitBuffer()
+	{
+		if (this->_length <= this->_bufAlloc) // 5 MB
+		{
+
+			this->_buffer = reinterpret_cast<uint8_t*>(::malloc((size_t)this->_length));
+			if (this->_buffer == nullptr) throw;
+			::fread_s(this->_buffer, (size_t)this->_length, 1, (size_t)this->_length, this->_handle);
+			this->_bufLen = (int32_t)this->_length;
+			this->_bufPos = 0;
+			this->_position = this->_length;
+
+		}
+		else
+		{
+
+			this->_buffer = reinterpret_cast<uint8_t*>(::malloc(this->_bufAlloc));
+			if (this->_buffer == nullptr) throw;
+			::fread_s(this->_buffer, this->_bufAlloc, 1, this->_bufAlloc, this->_handle);
+			this->_bufLen = this->_bufAlloc;
+			this->_bufPos = 0;
+			this->_position = this->_bufAlloc;
+
+		}
+	}
+
+	bool LineReader::UpdateBuffer()
+	{
+		auto left = this->_length - this->_position;
+
+		if (left <= 0)
+		{
+
+			this->_bufPos = this->_bufLen;
+			return false;
+
+		}
+		else if (left <= this->_bufAlloc) // 5 MB
+		{
+
+			::fread_s(this->_buffer, this->_bufLen, 1, (size_t)left, this->_handle);
+			this->_bufLen = (size_t)left;
+			this->_bufPos = 0;
+			this->_position += left;
+			return true;
+
+		}
+		else
+		{
+
+			::fread_s(this->_buffer, this->_bufAlloc, 1, this->_bufAlloc, this->_handle);
+			this->_bufPos = 0;
+			this->_position += this->_bufAlloc;
+			return true;
+
+		}
+	}
+
+	void LineReader::CleanBuffer()
+	{
+		::free(this->_buffer);
+	}
+
 	bool LineReader::ReadNext()
 	{
-		if (this->_position == this->_length) return false; // end of stream
+		if (this->EndOfStream()) return false; // end of stream
 
 		// Try to read line based on current encoding
 		std::vector<wchar_t> string = std::vector<wchar_t>();
@@ -294,9 +398,9 @@ namespace ObjParserC
 		return true;
 	}
 
-	std::wstring& LineReader::ReadString()
+	std::wstring LineReader::ReadString()
 	{
-		if (this->IsOutOfBounds()) return std::wstring(WStringEmpty);
+		if (this->IsOutOfBounds()) return WStringEmpty;
 		return this->_splits[this->_splitPos++];
 	}
 

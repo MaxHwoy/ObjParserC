@@ -20,7 +20,6 @@ workspace "ObjParserC"
 
 	includedirs {
 		".\\src\\",
-		".\\deps\\LinearC\\",
 	}
 
 	buildoptions {
@@ -61,7 +60,6 @@ workspace "ObjParserC"
 
 	project "ObjParserC"
 		targetname "ObjParserC"
-		dependson "LinearC"
 
 		language "c++"
 		kind "consoleapp"
@@ -80,27 +78,9 @@ workspace "ObjParserC"
 		}
 
 		links {
-			"LinearC",
+
 		}
 
 		includedirs {
 			".\\src\\",
-		}
-
-	group "Dependencies"
-
-	project "LinearC"
-		targetname "LinearC"
-		warnings "off"
-
-		language "c++"
-		kind "staticlib"
-
-		files {
-			".\\deps\\LinearC\\src\\**.hpp",
-			".\\deps\\LinearC\\src\\**.cpp",
-		}
-
-		includedirs {
-			".\\deps\\LinearC\\src\\",
 		}
